@@ -114,7 +114,7 @@ export function DashboardPage() {
   const { username } = useAuth();
   const { data: summary, isLoading: sumLoading, isError: sumError, error: sumErr } = useUserSummary(8);
   const { data: recentGames, isLoading: gamesLoading } = useRecentlyPlayed(8);
-  const { data: recentAchs, isLoading: achsLoading, isError: achsError } = useRecentAchievements(20);
+  const { data: recentAchs, isLoading: achsLoading, isError: achsError } = useRecentAchievements(60 * 24 * 7);
   const { data: rank } = useUserRank();
   const { data: aotw } = useAchievementOfWeek();
 

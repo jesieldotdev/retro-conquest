@@ -1,7 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Trophy, Zap, Star, Users, Lock, CheckCircle2, ExternalLink } from 'lucide-react';
-import { useGameProgress } from '../hooks/useRA';
-import { getImageUrl, getBadgeUrl } from '../api/ra';
+import { ArrowLeft, Trophy, Zap, Star, Users, Lock, CheckCircle2, ExternalLink, Crown, Medal } from 'lucide-react';
+import { useGameProgress, useGameRank } from '../hooks/useRA';
+import { getImageUrl, getBadgeUrl, getUserAvatarUrl } from '../api/ra';
+import { useAuth } from '../context/AuthContext';
 import { Badge } from '../components/ui/Badge';
 import { ProgressRing } from '../components/ui/ProgressRing';
 import { Skeleton } from '../components/ui/Skeleton';
@@ -83,6 +84,8 @@ export function GameDetailPage() {
   const { gameId } = useParams<{ gameId: string }>();
   const id = gameId ? parseInt(gameId) : null;
   const { data: game, isLoading } = useGameProgress(id);
+  const { data: gameRank, isLoading: rankLoading } = useGameRank(id);
+  const { username } = useAuth();
 
   if (isLoading) {
     return (
@@ -209,6 +212,71 @@ export function GameDetailPage() {
             <div className="text-white font-bold">{game.NumDistinctPlayersCasual?.toLocaleString() ?? 0}</div>
           </div>
         </div>
+      </div>
+
+      {/* Top players for this game */}
+      <div>
+        <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
+          <Crown className="w-4 h-4 text-ra-gold" />
+          Top Players
+          {gameRank && <span className="text-ra-text font-normal text-sm">({gameRank.length})</span>}
+        </h2>
+        {rankLoading ? (
+          <div className="space-y-2">
+            {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-14 rounded-xl" />)}
+          </div>
+        ) : !gameRank?.length ? (
+          <div className="glass-card p-6 text-center text-ra-text text-sm">No players ranked yet.</div>
+        ) : (
+          <div className="glass-card divide-y divide-ra-border/50 overflow-hidden">
+            {gameRank.slice(0, 10).map((p, idx) => {
+              const rank = idx + 1;
+              const rankIcon = rank === 1 ? Crown : rank <= 3 ? Medal : null;
+              const rankColor = rank === 1 ? 'text-yellow-400' : rank === 2 ? 'text-slate-300' : rank === 3 ? 'text-amber-600' : 'text-ra-text';
+              const isMe = p.User?.toLowerCase() === username.toLowerCase();
+              return (
+                <div
+                  key={`${p.User}-${idx}`}
+                  className={clsx(
+                    'flex items-center gap-3 p-3 transition-colors',
+                    isMe ? 'bg-ra-accent/10 border-l-2 border-ra-accent' : 'hover:bg-ra-border/20',
+                  )}
+                >
+                  <div className="w-8 flex items-center justify-center flex-shrink-0">
+                    {rankIcon ? (
+                      <span className={clsx('flex items-center justify-center', rankColor)}>
+                        {(() => { const Icon = rankIcon; return <Icon className="w-4 h-4" />; })()}
+                      </span>
+                    ) : (
+                      <span className="text-ra-text font-bold text-sm">#{rank}</span>
+                    )}
+                  </div>
+                  <img
+                    src={getUserAvatarUrl(p.User)}
+                    alt={p.User}
+                    className="w-9 h-9 rounded-xl object-cover border border-ra-border flex-shrink-0"
+                    onError={e => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${p.User?.[0] ?? '?'}&background=141628&color=4F6EF7`; }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-white font-semibold text-sm truncate">{p.User}</span>
+                      {isMe && <Badge variant="blue">You</Badge>}
+                    </div>
+                    {p.LastAward && (
+                      <div className="text-ra-text/60 text-xs mt-0.5">
+                        last unlock {formatDistanceToNow(new Date(p.LastAward), { addSuffix: true })}
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <div className="text-white font-bold text-sm">{p.TotalScore?.toLocaleString() ?? 0}</div>
+                    <div className="text-ra-text text-xs">{p.NumAchievements ?? 0} ach</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Achievements list */}

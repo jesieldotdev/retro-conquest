@@ -3,6 +3,7 @@ import type {
   UserSummary, UserCompletedGame, GameInfoAndProgress,
   LeaderboardEntry, UserRankAndScore, AchievementOfWeek,
   GameList, ConsoleID, UserRecentAchievements, RecentlyPlayedGame,
+  GameRankEntry,
 } from '../types/ra';
 
 const BASE_URL = 'https://retroachievements.org/API';
@@ -41,8 +42,8 @@ export const raApi = {
   getUserSummary: (username: string, numRecent = 10, numAchievements = 5) =>
     get<UserSummary>('API_GetUserSummary.php', `u=${username}&g=${numRecent}&a=${numAchievements}`),
 
-  getUserRecentAchievements: (username: string, count = 50) =>
-    get<UserRecentAchievements[]>('API_GetUserRecentAchievements.php', `u=${username}&c=${count}`),
+  getUserRecentAchievements: (username: string, minutes = 60) =>
+    get<UserRecentAchievements[]>('API_GetUserRecentAchievements.php', `u=${username}&m=${minutes}`),
 
   getUserCompletedGames: (username: string) =>
     get<UserCompletedGame[]>('API_GetUserCompletedGames.php', `u=${username}`),
@@ -53,8 +54,16 @@ export const raApi = {
   getUserRankAndScore: (username: string) =>
     get<UserRankAndScore>('API_GetUserRankAndScore.php', `u=${username}`),
 
-  getTopTenUsers: () =>
-    get<LeaderboardEntry[]>('API_GetTopTenUsers.php', ''),
+  getTopTenUsers: async (): Promise<LeaderboardEntry[]> => {
+    // RA returns positional keys: "1" = username, "2" = points, "3" = RetroPoints
+    const raw = await get<Array<Record<string, string | number>>>('API_GetTopTenUsers.php', '');
+    return raw.map(r => ({
+      UserName: String(r['1'] ?? r.User ?? r.UserName ?? ''),
+      TotalPoints: Number(r['2'] ?? r.RAPoints ?? r.TotalPoints ?? 0),
+      TotalTruePoints: Number(r['3'] ?? r.RetroPoints ?? r.TotalTruePoints ?? 0),
+      Rank: 0,
+    }));
+  },
 
   getAchievementOfWeek: () =>
     get<AchievementOfWeek>('API_GetAchievementOfTheWeek.php', ''),
@@ -70,4 +79,7 @@ export const raApi = {
 
   getUserPoints: (username: string) =>
     get<{ Points: number; SoftcorePoints: number }>('API_GetUserPoints.php', `u=${username}`),
+
+  getGameRankAndScore: (gameId: number, latestMasters = false) =>
+    get<GameRankEntry[]>('API_GetGameRankAndScore.php', `g=${gameId}&t=${latestMasters ? 1 : 0}`),
 };

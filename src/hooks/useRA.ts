@@ -12,11 +12,11 @@ export function useUserSummary(numRecent = 10) {
   });
 }
 
-export function useRecentAchievements(count = 50) {
+export function useRecentAchievements(minutes = 60) {
   const { username, isAuthenticated } = useAuth();
   return useQuery({
-    queryKey: ['recentAchievements', username, count],
-    queryFn: () => raApi.getUserRecentAchievements(username, count),
+    queryKey: ['recentAchievements', username, minutes],
+    queryFn: () => raApi.getUserRecentAchievements(username, minutes),
     enabled: isAuthenticated && !!username,
     staleTime: 1000 * 60 * 2,
   });
@@ -79,6 +79,16 @@ export function useAchievementOfWeek() {
     queryFn: () => raApi.getAchievementOfWeek(),
     enabled: isAuthenticated,
     staleTime: 1000 * 60 * 30,
+  });
+}
+
+export function useGameRank(gameId: number | null, latestMasters = false) {
+  const { isAuthenticated } = useAuth();
+  return useQuery({
+    queryKey: ['gameRank', gameId, latestMasters],
+    queryFn: () => raApi.getGameRankAndScore(gameId!, latestMasters),
+    enabled: isAuthenticated && gameId !== null,
+    staleTime: 1000 * 60 * 5,
   });
 }
 

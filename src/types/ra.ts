@@ -206,6 +206,13 @@ export interface ConsoleID {
   Name: string;
 }
 
+export interface GameRankEntry {
+  User: string;
+  NumAchievements: number;
+  TotalScore: number;
+  LastAward: string;
+}
+
 export interface UserRecentAchievements {
   Date: string;
   HardcoreMode: number;

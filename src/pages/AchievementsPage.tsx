@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { Search, Trophy, Zap, Lock, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useRecentAchievements } from '../hooks/useRA';
 import { getBadgeUrl } from '../api/ra';
-import { Badge } from '../components/ui/Badge';
 import { Skeleton } from '../components/ui/Skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { clsx } from 'clsx';
@@ -12,7 +11,7 @@ type HcFilter = 'all' | 'hardcore' | 'softcore';
 export function AchievementsPage() {
   const [search, setSearch] = useState('');
   const [filterHc, setFilterHc] = useState<HcFilter>('all');
-  const { data: achievements, isLoading, isError } = useRecentAchievements(200);
+  const { data: achievements, isLoading, isError } = useRecentAchievements(60 * 24 * 30);
 
   const filtered = useMemo(() => {
     if (!achievements) return [];
@@ -103,65 +102,71 @@ export function AchievementsPage() {
         </div>
       </div>
 
-      {/* List */}
+      {/* Grid */}
       {isLoading ? (
-        <div className="space-y-2">{[...Array(10)].map((_, i) => <Skeleton key={i} className="h-20 rounded-xl" />)}</div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+          {[...Array(10)].map((_, i) => <Skeleton key={i} className="aspect-[3/4] rounded-2xl" />)}
+        </div>
       ) : (
-        <div className="space-y-2">
-          {filtered.map((ach, idx) => (
-            <div
-              key={`${ach.AchievementID}-${idx}`}
-              className="glass-card-hover flex items-center gap-3 p-3 sm:p-4"
-            >
-              <div className="relative flex-shrink-0">
-                <img
-                  src={ach.BadgeURL || getBadgeUrl(ach.BadgeName)}
-                  alt={ach.Title}
-                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl object-cover border border-ra-border"
-                  onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                />
-                {ach.HardcoreMode === 1 && (
-                  <div className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-ra-gold rounded-full flex items-center justify-center shadow-glow-gold">
-                    <Zap className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-ra-darker" />
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+            {filtered.map((ach, idx) => (
+              <div
+                key={`${ach.AchievementID}-${idx}`}
+                className="glass-card-hover overflow-hidden flex flex-col group"
+              >
+                <div className="relative aspect-square bg-ra-darker overflow-hidden">
+                  <img
+                    src={getBadgeUrl(ach.BadgeName)}
+                    alt={ach.Title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    onError={e => {
+                      const img = e.target as HTMLImageElement;
+                      img.onerror = null;
+                      img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(ach.Title[0] || '?')}&background=141628&color=A855F7&size=128`;
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-ra-darker via-transparent to-transparent" />
+                  <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-ra-darker/80 backdrop-blur-sm rounded-lg px-2 py-1 border border-ra-border/60">
+                    <Trophy className="w-3 h-3 text-ra-gold" />
+                    <span className="text-ra-gold font-bold text-xs">{ach.Points}</span>
                   </div>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="text-white text-sm font-semibold line-clamp-1">{ach.Title}</div>
-                    <div className="text-ra-text text-xs mt-0.5 line-clamp-1 hidden sm:block">{ach.Description}</div>
-                  </div>
-                  <div className="flex-shrink-0 text-right">
-                    <div className="text-ra-gold font-bold text-sm">+{ach.Points}</div>
-                    <div className="text-ra-text/50 text-xs">pts</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                  <span className="text-ra-text text-xs truncate max-w-32 sm:max-w-none">{ach.GameTitle}</span>
-                  <span className="text-ra-text/40 text-xs hidden sm:inline">•</span>
-                  <span className="text-ra-text text-xs hidden sm:inline">{ach.ConsoleName}</span>
-                  <span className="text-ra-text/40 text-xs">•</span>
-                  {ach.Date && (
-                    <span className="text-ra-text/60 text-xs">
-                      {formatDistanceToNow(new Date(ach.Date), { addSuffix: true })}
-                    </span>
+                  {ach.HardcoreMode === 1 ? (
+                    <div className="absolute top-2 left-2 flex items-center gap-1 bg-ra-gold/90 rounded-lg px-1.5 py-0.5 shadow-glow-gold">
+                      <Zap className="w-3 h-3 text-ra-darker" />
+                      <span className="text-ra-darker font-bold text-[10px]">HC</span>
+                    </div>
+                  ) : (
+                    <div className="absolute top-2 left-2 bg-ra-border/80 backdrop-blur-sm rounded-lg px-1.5 py-0.5 border border-ra-border/60">
+                      <span className="text-ra-text font-bold text-[10px]">SC</span>
+                    </div>
                   )}
-                  {ach.HardcoreMode === 1
-                    ? <Badge variant="gold"><Zap className="w-2.5 h-2.5" />HC</Badge>
-                    : <Badge variant="gray">SC</Badge>
-                  }
+                </div>
+                <div className="p-3 flex-1 flex flex-col">
+                  <div className="text-white text-sm font-semibold line-clamp-1" title={ach.Title}>{ach.Title}</div>
+                  <div className="text-ra-text text-xs mt-1 line-clamp-2 flex-1" title={ach.Description}>{ach.Description}</div>
+                  <div className="mt-2 pt-2 border-t border-ra-border/40">
+                    <div className="text-ra-text text-xs line-clamp-1" title={ach.GameTitle}>{ach.GameTitle}</div>
+                    <div className="flex items-center justify-between gap-1 mt-0.5">
+                      <span className="text-ra-text/60 text-[10px] line-clamp-1">{ach.ConsoleName}</span>
+                      {ach.Date && (
+                        <span className="text-ra-text/60 text-[10px] flex-shrink-0">
+                          {formatDistanceToNow(new Date(ach.Date), { addSuffix: true })}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
           {!filtered.length && (
             <div className="text-center py-12 text-ra-text">
               <Lock className="w-10 h-10 mx-auto mb-3 opacity-20" />
               <p className="font-medium">No achievements found</p>
             </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );
