@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    background-color: #080A12;
+    color: #A0A8C8;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  #root {
+    min-height: 100vh;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #080A12;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1E2240;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4F6EF7;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-ra-card border border-ra-border rounded-2xl shadow-card;
+    background: linear-gradient(135deg, rgba(20,22,40,0.9) 0%, rgba(13,15,26,0.95) 100%);
+  }
+
+  .glass-card-hover {
+    @apply glass-card transition-all duration-300 hover:border-ra-accent/40 hover:shadow-glow-accent;
+  }
+
+  .badge-gold {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-ra-gold/20 text-ra-gold border border-ra-gold/30;
+  }
+
+  .badge-blue {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-ra-accent/20 text-ra-accent border border-ra-accent/30;
+  }
+
+  .badge-green {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-ra-green/20 text-ra-green border border-ra-green/30;
+  }
+
+  .badge-purple {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-ra-purple/20 text-ra-purple border border-ra-purple/30;
+  }
+
+  .stat-card {
+    @apply glass-card p-5 flex flex-col gap-3;
+  }
+
+  .progress-bar {
+    @apply h-2 bg-ra-border rounded-full overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply h-full rounded-full transition-all duration-700 ease-out;
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, #1E2240 25%, #252840 50%, #1E2240 75%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+    @apply rounded-lg;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-ra-text text-sm font-medium transition-all duration-200;
+  }
+
+  .nav-item:hover {
+    @apply bg-ra-border/60 text-white;
+  }
+
+  .nav-item.active {
+    @apply bg-ra-accent/20 text-ra-accent;
+    box-shadow: inset 0 0 0 1px rgba(79,110,247,0.3);
+  }
+
+  .achievement-locked {
+    @apply opacity-40 grayscale;
+  }
+
+  .trophy-gold { @apply text-yellow-400; }
+  .trophy-silver { @apply text-slate-300; }
+  .trophy-bronze { @apply text-amber-600; }
+}
+
+@layer utilities {
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #F5C518, #FFD700, #F5C518);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-blue {
+    background: linear-gradient(135deg, #4F6EF7, #818CF8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .border-gradient {
+    border: 1px solid transparent;
+    background: linear-gradient(#141628, #141628) padding-box,
+                linear-gradient(135deg, #4F6EF7, #A855F7) border-box;
+  }
+
+  .glow-text-gold {
+    text-shadow: 0 0 20px rgba(245,197,24,0.5);
+  }
+
+  .glow-text-accent {
+    text-shadow: 0 0 20px rgba(79,110,247,0.5);
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .game-card-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .game-card-hover:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+}
