@@ -113,8 +113,9 @@ function GameProgressCard({ game }: { game: any }) {
 
 export function DashboardPage() {
   const { username } = useAuth();
-  const { data: summary, isLoading: sumLoading, isError: sumError, error: sumErr } = useUserSummary(8);
-  const { data: recentGames, isLoading: gamesLoading } = useRecentlyPlayed(8);
+  const NOW_PLAYING_POLL_MS = 60_000;
+  const { data: summary, isLoading: sumLoading, isError: sumError, error: sumErr } = useUserSummary(8, NOW_PLAYING_POLL_MS);
+  const { data: recentGames, isLoading: gamesLoading } = useRecentlyPlayed(8, NOW_PLAYING_POLL_MS);
   const { data: recentAchs, isLoading: achsLoading, isError: achsError } = useRecentAchievements(60 * 24 * 7);
   const { data: rank } = useUserRank();
   const { data: aotw } = useAchievementOfWeek();

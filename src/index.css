@@ -36,12 +36,11 @@
 
 @layer components {
   .glass-card {
-    @apply bg-ra-card border border-ra-border rounded-2xl shadow-card;
-    background: linear-gradient(135deg, rgba(20,22,40,0.9) 0%, rgba(13,15,26,0.95) 100%);
+    @apply bg-ra-card rounded-2xl shadow-card;
   }
 
   .glass-card-hover {
-    @apply glass-card transition-all duration-300 hover:border-ra-accent/40 hover:shadow-glow-accent;
+    @apply glass-card transition-all duration-300 hover:bg-[#1A1D3A] hover:shadow-glow-accent;
   }
 
   .badge-gold {

@@ -2,13 +2,15 @@ import { useQuery } from '@tanstack/react-query';
 import { raApi } from '../api/ra';
 import { useAuth } from '../context/AuthContext';
 
-export function useUserSummary(numRecent = 10) {
+export function useUserSummary(numRecent = 10, refetchInterval?: number) {
   const { username, isAuthenticated } = useAuth();
   return useQuery({
     queryKey: ['userSummary', username, numRecent],
     queryFn: () => raApi.getUserSummary(username, numRecent, 10),
     enabled: isAuthenticated && !!username,
     staleTime: 1000 * 60 * 2,
+    refetchInterval,
+    refetchIntervalInBackground: false,
   });
 }
 
@@ -22,13 +24,15 @@ export function useRecentAchievements(minutes = 60) {
   });
 }
 
-export function useRecentlyPlayed(count = 10) {
+export function useRecentlyPlayed(count = 10, refetchInterval?: number) {
   const { username, isAuthenticated } = useAuth();
   return useQuery({
     queryKey: ['recentlyPlayed', username, count],
     queryFn: () => raApi.getUserRecentlyPlayedGames(username, count),
     enabled: isAuthenticated && !!username,
     staleTime: 1000 * 60 * 2,
+    refetchInterval,
+    refetchIntervalInBackground: false,
   });
 }
 
