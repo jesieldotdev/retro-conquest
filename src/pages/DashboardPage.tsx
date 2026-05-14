@@ -123,7 +123,7 @@ export function DashboardPage() {
   const richPresence = summary?.RichPresenceMsg;
   const currentGame = recentGames?.[0] ?? summary?.RecentlyPlayed?.[0];
   const lastPlayedMs = currentGame?.LastPlayed ? Date.now() - new Date(currentGame.LastPlayed).getTime() : Infinity;
-  const isPlayingNow = !!currentGame && lastPlayedMs < 1000 * 60 * 15;
+  const isPlayingNow = !!currentGame && lastPlayedMs < 1000 * 60 * 2;
 
   const hcPoints = summary?.TotalPoints ?? 0;
   const scPoints = summary?.TotalSoftcorePoints ?? 0;
@@ -321,13 +321,18 @@ export function DashboardPage() {
               </div>
               <div className="flex gap-3">
                 <img
-                  src={getBadgeUrl(aotw.Achievement.BadgeName)}
+                  src={getBadgeUrl(aotw.Achievement.BadgeName ?? String(aotw.Achievement.ID))}
                   alt={aotw.Achievement.Title}
                   className="w-12 h-12 rounded-xl border border-ra-border flex-shrink-0 object-cover"
+                  onError={e => {
+                    const img = e.target as HTMLImageElement;
+                    img.onerror = null;
+                    img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(aotw.Achievement.Title[0] || '?')}&background=141628&color=F5C518`;
+                  }}
                 />
                 <div className="flex-1 min-w-0">
                   <div className="text-white text-sm font-semibold truncate">{aotw.Achievement.Title}</div>
-                  <div className="text-ra-text text-xs truncate">{aotw.Achievement.GameTitle}</div>
+                  <div className="text-ra-text text-xs truncate">{aotw.Game?.Title ?? aotw.Achievement.GameTitle ?? ''}</div>
                   <div className="flex items-center gap-2 mt-1.5">
                     <Badge variant="gold">{aotw.Achievement.Points} pts</Badge>
                     <span className="text-ra-text text-xs">{aotw.UnlocksCount} unlocks</span>

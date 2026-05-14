@@ -1,4 +1,4 @@
-import { Star, Trophy, Users, Zap, Calendar, Clock } from 'lucide-react';
+import { Star, Trophy, Users, Zap, Calendar, Clock, AlertCircle, RefreshCw } from 'lucide-react';
 import { useAchievementOfWeek } from '../hooks/useRA';
 import { getBadgeUrl, getUserAvatarUrl } from '../api/ra';
 import { Skeleton } from '../components/ui/Skeleton';
@@ -6,7 +6,7 @@ import { Badge } from '../components/ui/Badge';
 import { formatDistanceToNow, format } from 'date-fns';
 
 export function AotwPage() {
-  const { data: aotw, isLoading } = useAchievementOfWeek();
+  const { data: aotw, isLoading, isError, error, refetch, isFetching } = useAchievementOfWeek();
 
   if (isLoading) {
     return (
@@ -15,6 +15,34 @@ export function AotwPage() {
         <Skeleton className="h-48 rounded-2xl" />
         <div className="space-y-3">
           {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-16" />)}
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    const status = (error as any)?.response?.status;
+    const message = (error as any)?.message ?? 'Unknown error';
+    return (
+      <div className="p-6 max-w-2xl mx-auto">
+        <div className="glass-card p-6 text-center space-y-3">
+          <AlertCircle className="w-10 h-10 mx-auto text-ra-red" />
+          <div>
+            <h2 className="text-white font-semibold">Couldn't load Achievement of the Week</h2>
+            <p className="text-ra-text text-sm mt-1">
+              The RetroAchievements API returned{status ? ` ${status}` : ' an error'} for this request.
+              {status === 500 && ' This endpoint occasionally fails on their side — try again in a few minutes.'}
+            </p>
+            <p className="text-ra-text/60 text-xs mt-2 font-mono break-all">{message}</p>
+          </div>
+          <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-ra-accent/20 text-ra-accent text-sm font-medium hover:bg-ra-accent/30 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={isFetching ? 'w-4 h-4 animate-spin' : 'w-4 h-4'} />
+            {isFetching ? 'Retrying...' : 'Try again'}
+          </button>
         </div>
       </div>
     );
@@ -31,8 +59,12 @@ export function AotwPage() {
     );
   }
 
-  const { Achievement: ach, StartAt, TotalPlayers, Unlocks, UnlocksCount, UnlocksHardcoreCount } = aotw;
+  const { Achievement: ach, Game, Console, StartAt, TotalPlayers, Unlocks, UnlocksCount, UnlocksHardcoreCount } = aotw;
   const hcPct = UnlocksCount > 0 ? Math.round((UnlocksHardcoreCount / UnlocksCount) * 100) : 0;
+  const gameTitle = Game?.Title ?? ach.GameTitle ?? '';
+  const consoleName = Console?.Title ?? ach.ConsoleName ?? '';
+  const points = typeof ach.Points === 'string' ? parseInt(ach.Points) || 0 : ach.Points;
+  const badgeName = ach.BadgeName ?? String(ach.ID);
 
   return (
     <div className="p-6 space-y-6 max-w-4xl mx-auto">
@@ -52,9 +84,14 @@ export function AotwPage() {
         <div className="p-6 flex gap-6 items-start">
           <div className="relative flex-shrink-0">
             <img
-              src={getBadgeUrl(ach.BadgeName)}
+              src={getBadgeUrl(badgeName)}
               alt={ach.Title}
               className="w-28 h-28 rounded-2xl object-cover border-2 border-ra-gold/30 shadow-glow-gold animate-float"
+              onError={e => {
+                const img = e.target as HTMLImageElement;
+                img.onerror = null;
+                img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(ach.Title[0] || '?')}&background=141628&color=F5C518&size=128`;
+              }}
             />
             <div className="absolute -top-2 -right-2 w-8 h-8 bg-ra-gold rounded-full flex items-center justify-center shadow-glow-gold">
               <Star className="w-4 h-4 text-ra-darker" />
@@ -63,15 +100,16 @@ export function AotwPage() {
           <div className="flex-1">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
                   <Badge variant="gold"><Star className="w-3 h-3" />Achievement of Week</Badge>
-                  <Badge variant="blue">{ach.ConsoleName}</Badge>
+                  {consoleName && <Badge variant="blue">{consoleName}</Badge>}
                 </div>
                 <h2 className="text-white text-2xl font-bold">{ach.Title}</h2>
-                <div className="text-ra-text text-sm mt-1">{ach.GameTitle}</div>
+                {gameTitle && <div className="text-ra-text text-sm mt-1">{gameTitle}</div>}
+                {ach.Description && <div className="text-ra-text text-sm mt-2 italic">"{ach.Description}"</div>}
               </div>
               <div className="text-right flex-shrink-0">
-                <div className="text-ra-gold text-3xl font-bold">{ach.Points}</div>
+                <div className="text-ra-gold text-3xl font-bold">{points}</div>
                 <div className="text-ra-text text-xs">points</div>
               </div>
             </div>
@@ -130,7 +168,7 @@ export function AotwPage() {
                   )}
                 </div>
                 <div className="text-ra-text text-xs mt-0.5 flex items-center gap-1.5">
-                  <span>{unlock.RAPoints.toLocaleString()} pts</span>
+                  <span>{(unlock.RAPoints ?? unlock.RASoftcorePoints ?? 0).toLocaleString()} pts</span>
                   <span className="text-ra-text/40">•</span>
                   <span>{formatDistanceToNow(new Date(unlock.DateAwarded), { addSuffix: true })}</span>
                 </div>

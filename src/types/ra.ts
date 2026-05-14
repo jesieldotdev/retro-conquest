@@ -164,15 +164,22 @@ export interface UserRankAndScore {
 
 export interface AchievementOfWeek {
   Achievement: {
-    ID: string;
+    ID: number | string;
     Title: string;
     Description: string;
-    Points: string;
-    BadgeName: string;
-    GameID: string;
-    GameTitle: string;
-    ConsoleName: string;
+    Points: number | string;
+    TrueRatio?: number;
+    Type?: string | null;
+    Author?: string;
+    BadgeName?: string;
+    // Legacy shape (older API) — keep optional for backwards compat
+    GameID?: number | string;
+    GameTitle?: string;
+    ConsoleName?: string;
   };
+  Game?: { ID: number | string; Title: string };
+  Console?: { ID: number | string; Title: string };
+  ForumTopic?: { ID: number };
   StartAt: string;
   TotalPlayers: number;
   Unlocks: UnlockEntry[];
@@ -182,7 +189,9 @@ export interface AchievementOfWeek {
 
 export interface UnlockEntry {
   User: string;
-  RAPoints: number;
+  ULID?: string;
+  RAPoints?: number;
+  RASoftcorePoints?: number;
   DateAwarded: string;
   HardcoreMode: number;
 }
