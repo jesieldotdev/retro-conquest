@@ -30,19 +30,21 @@ function AchievementCard({ ach, earned, earnedHc }: { ach: any; earned: boolean;
         : 'bg-ra-darker/50 border-ra-border/50 opacity-60'
     )}>
       <div className="relative flex-shrink-0">
-        <img
-          src={getBadgeUrl(ach.BadgeName, !earned)}
-          alt={ach.Title}
-          className={clsx('w-12 h-12 rounded-xl object-cover border border-ra-border', !earned && 'grayscale')}
-          onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-        />
+        <div className="crt-screen w-12 h-12 rounded-xl overflow-hidden border border-ra-border">
+          <img
+            src={getBadgeUrl(ach.BadgeName, !earned)}
+            alt={ach.Title}
+            className={clsx('w-full h-full object-cover', !earned && 'grayscale')}
+            onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+          />
+        </div>
         {earnedHc && (
-          <div className="absolute -top-1 -right-1 w-4 h-4 bg-ra-gold rounded-full flex items-center justify-center">
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-ra-gold rounded-full flex items-center justify-center z-20">
             <Zap className="w-2.5 h-2.5 text-ra-darker" />
           </div>
         )}
         {!earned && (
-          <div className="absolute inset-0 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center z-20">
             <Lock className="w-4 h-4 text-ra-text/60" />
           </div>
         )}

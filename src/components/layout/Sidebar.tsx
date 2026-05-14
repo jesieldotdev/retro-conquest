@@ -42,12 +42,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       )}
 
       <aside className={clsx(
-        'fixed top-0 left-0 h-full w-64 flex flex-col bg-ra-dark border-r border-ra-border z-40 transition-transform duration-300',
+        'fixed top-0 left-0 h-full w-64 flex flex-col bg-ra-dark z-40 transition-transform duration-300',
         'lg:relative lg:translate-x-0 lg:z-auto',
         open ? 'translate-x-0' : '-translate-x-full',
       )}>
         {/* Logo */}
-        <div className="p-4 border-b border-ra-border flex items-center justify-between">
+        <div className="p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-ra-accent/20 border border-ra-accent/30 flex items-center justify-center flex-shrink-0">
               <TrophyIcon className="w-5 h-5 text-ra-gold" />
@@ -63,31 +63,37 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </div>
 
         {/* User info */}
-        {summary && (
-          <div className="p-3 border-b border-ra-border">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-ra-card">
-              <div className="relative flex-shrink-0">
-                <img
-                  src={getUserAvatarUrl(username)}
-                  alt={username}
-                  className="w-10 h-10 rounded-xl object-cover border border-ra-border"
-                  onError={e => {
-                    (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${username}&background=4F6EF7&color=fff`;
-                  }}
-                />
-                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-ra-green rounded-full border-2 border-ra-dark" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-white text-sm font-semibold truncate">{username}</div>
-                <div className="flex items-center gap-1 text-ra-gold text-xs">
-                  <Flame className="w-3 h-3 flex-shrink-0" />
-                  <span className="truncate">{summary.TotalPoints.toLocaleString()} pts</span>
+        {summary && (() => {
+          const hc = summary.TotalPoints ?? 0;
+          const sc = summary.TotalSoftcorePoints ?? 0;
+          const points = hc > 0 ? hc : sc;
+          const isHc = hc > 0;
+          return (
+            <div className="p-3">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-ra-card">
+                <div className="relative flex-shrink-0">
+                  <img
+                    src={getUserAvatarUrl(username)}
+                    alt={username}
+                    className="w-10 h-10 rounded-xl object-cover border border-ra-border"
+                    onError={e => {
+                      (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${username}&background=4F6EF7&color=fff`;
+                    }}
+                  />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-ra-green rounded-full border-2 border-ra-dark" />
                 </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-white text-sm font-semibold truncate">{username}</div>
+                  <div className={clsx('flex items-center gap-1 text-xs', isHc ? 'text-ra-gold' : 'text-ra-text')}>
+                    <Flame className="w-3 h-3 flex-shrink-0" />
+                    <span className="truncate">{points.toLocaleString()} {isHc ? 'pts' : 'SC pts'}</span>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-ra-text/40 flex-shrink-0" />
               </div>
-              <ChevronRight className="w-4 h-4 text-ra-text/40 flex-shrink-0" />
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Nav */}
         <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
@@ -105,7 +111,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </nav>
 
         {/* Footer */}
-        <div className="p-3 border-t border-ra-border">
+        <div className="p-3">
           <button
             onClick={logout}
             className="nav-item w-full text-ra-red/70 hover:text-ra-red hover:bg-ra-red/10"

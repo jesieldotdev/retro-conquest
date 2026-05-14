@@ -83,7 +83,7 @@ export function ProgressPage() {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null;
     return (
-      <div className="glass-card p-2.5 text-xs border border-ra-border">
+      <div className="glass-card p-2.5 text-xs">
         <div className="text-white font-medium mb-1">{label}</div>
         {payload.map((p: any) => (
           <div key={p.dataKey} className="flex items-center gap-1.5">

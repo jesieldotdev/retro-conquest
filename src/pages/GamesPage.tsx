@@ -105,7 +105,7 @@ export function GamesPage() {
           />
         </div>
         <div className="flex gap-2">
-          <div className="flex items-center gap-1 bg-ra-card border border-ra-border rounded-xl p-1 overflow-x-auto scrollbar-hide">
+          <div className="flex items-center gap-1 bg-ra-card rounded-xl p-1 overflow-x-auto scrollbar-hide">
             {(['all', 'completed', 'in-progress', 'hardcore'] as FilterType[]).map(f => (
               <button
                 key={f}
@@ -122,7 +122,7 @@ export function GamesPage() {
           <select
             value={sort}
             onChange={e => setSort(e.target.value as any)}
-            className="bg-ra-card border border-ra-border rounded-xl px-3 py-2 text-ra-text text-sm focus:outline-none focus:border-ra-accent/60 flex-shrink-0"
+            className="bg-ra-card rounded-xl px-3 py-2 text-ra-text text-sm focus:outline-none focus:ring-2 focus:ring-ra-accent/40 flex-shrink-0"
           >
             <option value="recent">Recent</option>
             <option value="pct">% Done</option>

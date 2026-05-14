@@ -86,7 +86,7 @@ export function AchievementsPage() {
             className="w-full bg-ra-card border border-ra-border rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-ra-text/40 focus:outline-none focus:border-ra-accent/60 text-sm"
           />
         </div>
-        <div className="flex items-center gap-1 bg-ra-card border border-ra-border rounded-xl p-1 self-start">
+        <div className="flex items-center gap-1 bg-ra-card rounded-xl p-1 self-start">
           {(['all', 'hardcore', 'softcore'] as HcFilter[]).map(f => (
             <button
               key={f}
@@ -115,7 +115,7 @@ export function AchievementsPage() {
                 key={`${ach.AchievementID}-${idx}`}
                 className="glass-card-hover overflow-hidden flex flex-col group"
               >
-                <div className="relative aspect-square bg-ra-darker overflow-hidden">
+                <div className="crt-screen aspect-square bg-ra-darker overflow-hidden">
                   <img
                     src={getBadgeUrl(ach.BadgeName)}
                     alt={ach.Title}
@@ -126,18 +126,18 @@ export function AchievementsPage() {
                       img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(ach.Title[0] || '?')}&background=141628&color=A855F7&size=128`;
                     }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ra-darker via-transparent to-transparent" />
-                  <div className="absolute top-2 right-2 flex items-center gap-1.5 bg-ra-darker/80 backdrop-blur-sm rounded-lg px-2 py-1 border border-ra-border/60">
+                  <div className="absolute inset-0 bg-gradient-to-t from-ra-darker via-transparent to-transparent z-10" />
+                  <div className="absolute z-20 top-2 right-2 flex items-center gap-1.5 bg-ra-darker/80 backdrop-blur-sm rounded-lg px-2 py-1 border border-ra-border/60">
                     <Trophy className="w-3 h-3 text-ra-gold" />
                     <span className="text-ra-gold font-bold text-xs">{ach.Points}</span>
                   </div>
                   {ach.HardcoreMode === 1 ? (
-                    <div className="absolute top-2 left-2 flex items-center gap-1 bg-ra-gold/90 rounded-lg px-1.5 py-0.5 shadow-glow-gold">
+                    <div className="absolute z-20 top-2 left-2 flex items-center gap-1 bg-ra-gold/90 rounded-lg px-1.5 py-0.5 shadow-glow-gold">
                       <Zap className="w-3 h-3 text-ra-darker" />
                       <span className="text-ra-darker font-bold text-[10px]">HC</span>
                     </div>
                   ) : (
-                    <div className="absolute top-2 left-2 bg-ra-border/80 backdrop-blur-sm rounded-lg px-1.5 py-0.5 border border-ra-border/60">
+                    <div className="absolute z-20 top-2 left-2 bg-ra-border/80 backdrop-blur-sm rounded-lg px-1.5 py-0.5 border border-ra-border/60">
                       <span className="text-ra-text font-bold text-[10px]">SC</span>
                     </div>
                   )}

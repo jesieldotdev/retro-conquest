@@ -46,7 +46,7 @@ export function LeaderboardPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 bg-ra-card border border-ra-border rounded-xl p-1 self-start w-fit">
+      <div className="flex items-center gap-1 bg-ra-card rounded-xl p-1 self-start w-fit">
         <button
           onClick={() => setTab('global')}
           className={clsx(
@@ -202,10 +202,10 @@ export function LeaderboardPage() {
                     key={g.GameID}
                     onClick={() => setSelectedGameId(g.GameID)}
                     className={clsx(
-                      'flex items-center gap-2 px-2 py-1.5 rounded-lg border text-xs transition-all',
+                      'flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs transition-all',
                       selectedGameId === g.GameID
-                        ? 'bg-ra-accent/20 border-ra-accent text-white'
-                        : 'bg-ra-darker border-ra-border text-ra-text hover:text-white hover:border-ra-accent/40',
+                        ? 'bg-ra-accent/25 text-white'
+                        : 'bg-ra-darker text-ra-text hover:text-white hover:bg-ra-border/50',
                     )}
                     title={g.Title}
                   >

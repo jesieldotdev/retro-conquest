@@ -11,10 +11,10 @@ export function Layout({ children }: { children: ReactNode }) {
 
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile top bar */}
-        <header className="lg:hidden sticky top-0 z-20 flex items-center gap-3 px-4 py-3 bg-ra-dark border-b border-ra-border">
+        <header className="lg:hidden sticky top-0 z-20 flex items-center gap-3 px-4 py-3 bg-ra-dark shadow-card">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-xl bg-ra-card border border-ra-border text-ra-text hover:text-white hover:border-ra-accent/40 transition-colors"
+            className="p-2 rounded-xl bg-ra-card text-ra-text hover:text-white hover:bg-ra-border/60 transition-colors"
           >
             <Menu className="w-5 h-5" />
           </button>
