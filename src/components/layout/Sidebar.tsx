@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { clsx } from 'clsx';
 import {
-  LayoutDashboard, Gamepad2, Trophy, Star, BarChart3,
+  LayoutDashboard, Gamepad2, Trophy, BarChart3,
   Users, LogOut, Trophy as TrophyIcon, Flame, ChevronRight, X,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -14,7 +14,6 @@ const navItems = [
   { to: '/achievements', icon: Trophy, label: 'Achievements' },
   { to: '/progress', icon: BarChart3, label: 'Progress' },
   { to: '/leaderboard', icon: Users, label: 'Leaderboard' },
-  { to: '/aotw', icon: Star, label: 'Ach. of Week' },
 ];
 
 interface SidebarProps {

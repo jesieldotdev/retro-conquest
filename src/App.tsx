@@ -9,7 +9,6 @@ import { GameDetailPage } from './pages/GameDetailPage';
 import { AchievementsPage } from './pages/AchievementsPage';
 import { ProgressPage } from './pages/ProgressPage';
 import { LeaderboardPage } from './pages/LeaderboardPage';
-import { AotwPage } from './pages/AotwPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,7 +35,6 @@ function AppRoutes() {
         <Route path="/achievements" element={<AchievementsPage />} />
         <Route path="/progress" element={<ProgressPage />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
-        <Route path="/aotw" element={<AotwPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>

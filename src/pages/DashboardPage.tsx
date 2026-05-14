@@ -1,8 +1,8 @@
 import {
-  Trophy, Star, Flame, TrendingUp, Gamepad2,
+  Trophy, Flame, TrendingUp, Gamepad2,
   Clock, Award, Zap, Medal, ChevronRight, Lock, AlertCircle, Radio,
 } from 'lucide-react';
-import { useUserSummary, useRecentAchievements, useUserRank, useAchievementOfWeek, useRecentlyPlayed } from '../hooks/useRA';
+import { useUserSummary, useRecentAchievements, useUserRank, useRecentlyPlayed } from '../hooks/useRA';
 import { useAuth } from '../context/AuthContext';
 import { getImageUrl, getBadgeUrl, getUserAvatarUrl } from '../api/ra';
 import { ProgressRing } from '../components/ui/ProgressRing';
@@ -118,7 +118,6 @@ export function DashboardPage() {
   const { data: recentGames, isLoading: gamesLoading } = useRecentlyPlayed(8, NOW_PLAYING_POLL_MS);
   const { data: recentAchs, isLoading: achsLoading, isError: achsError } = useRecentAchievements(60 * 24 * 7);
   const { data: rank } = useUserRank();
-  const { data: aotw } = useAchievementOfWeek();
 
   const richPresence = summary?.RichPresenceMsg;
   const currentGame = recentGames?.[0] ?? summary?.RecentlyPlayed?.[0];
@@ -312,36 +311,6 @@ export function DashboardPage() {
 
         {/* Right column */}
         <div className="space-y-4">
-          {/* Achievement of the Week */}
-          {aotw && (
-            <div className="glass-card p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <Star className="w-4 h-4 text-ra-gold" />
-                <h3 className="text-white font-semibold text-sm">Achievement of Week</h3>
-              </div>
-              <div className="flex gap-3">
-                <img
-                  src={getBadgeUrl(aotw.Achievement.BadgeName ?? String(aotw.Achievement.ID))}
-                  alt={aotw.Achievement.Title}
-                  className="w-12 h-12 rounded-xl border border-ra-border flex-shrink-0 object-cover"
-                  onError={e => {
-                    const img = e.target as HTMLImageElement;
-                    img.onerror = null;
-                    img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(aotw.Achievement.Title[0] || '?')}&background=141628&color=F5C518`;
-                  }}
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="text-white text-sm font-semibold truncate">{aotw.Achievement.Title}</div>
-                  <div className="text-ra-text text-xs truncate">{aotw.Game?.Title ?? aotw.Achievement.GameTitle ?? ''}</div>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <Badge variant="gold">{aotw.Achievement.Points} pts</Badge>
-                    <span className="text-ra-text text-xs">{aotw.UnlocksCount} unlocks</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Recent achievements */}
           <div className="glass-card p-4">
             <div className="flex items-center justify-between mb-3">

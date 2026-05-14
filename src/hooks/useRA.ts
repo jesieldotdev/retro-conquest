@@ -76,17 +76,6 @@ export function useTopTenUsers() {
   });
 }
 
-export function useAchievementOfWeek() {
-  const { isAuthenticated } = useAuth();
-  return useQuery({
-    queryKey: ['achievementOfWeek'],
-    queryFn: () => raApi.getAchievementOfWeek(),
-    enabled: isAuthenticated,
-    staleTime: 1000 * 60 * 30,
-    retry: 1,
-  });
-}
-
 export function useGameRank(gameId: number | null, latestMasters = false) {
   const { isAuthenticated } = useAuth();
   return useQuery({

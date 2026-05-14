@@ -162,40 +162,6 @@ export interface UserRankAndScore {
   Rank: string;
 }
 
-export interface AchievementOfWeek {
-  Achievement: {
-    ID: number | string;
-    Title: string;
-    Description: string;
-    Points: number | string;
-    TrueRatio?: number;
-    Type?: string | null;
-    Author?: string;
-    BadgeName?: string;
-    // Legacy shape (older API) — keep optional for backwards compat
-    GameID?: number | string;
-    GameTitle?: string;
-    ConsoleName?: string;
-  };
-  Game?: { ID: number | string; Title: string };
-  Console?: { ID: number | string; Title: string };
-  ForumTopic?: { ID: number };
-  StartAt: string;
-  TotalPlayers: number;
-  Unlocks: UnlockEntry[];
-  UnlocksCount: number;
-  UnlocksHardcoreCount: number;
-}
-
-export interface UnlockEntry {
-  User: string;
-  ULID?: string;
-  RAPoints?: number;
-  RASoftcorePoints?: number;
-  DateAwarded: string;
-  HardcoreMode: number;
-}
-
 export interface GameList {
   ID: number;
   Title: string;

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type {
   UserSummary, UserCompletedGame, GameInfoAndProgress,
-  LeaderboardEntry, UserRankAndScore, AchievementOfWeek,
+  LeaderboardEntry, UserRankAndScore,
   GameList, ConsoleID, UserRecentAchievements, RecentlyPlayedGame,
   GameRankEntry,
 } from '../types/ra';
@@ -64,9 +64,6 @@ export const raApi = {
       Rank: 0,
     }));
   },
-
-  getAchievementOfWeek: () =>
-    get<AchievementOfWeek>('API_GetAchievementOfTheWeek.php', ''),
 
   getConsoleIDs: () =>
     get<ConsoleID[]>('API_GetConsoleIDs.php', ''),
