@@ -234,32 +234,28 @@ export function DashboardPage() {
 
       {/* User hero */}
       {summary && (
-        <div className="glass-card overflow-hidden">
-          <div className="h-16 sm:h-24 relative" style={{
-            background: 'linear-gradient(135deg, #1a1f4e 0%, #0d0f1a 50%, #1a1030 100%)',
-          }}>
-            <div className="absolute inset-0 opacity-30" style={{
-              backgroundImage: 'radial-gradient(circle at 30% 50%, rgba(79,110,247,0.4) 0%, transparent 60%), radial-gradient(circle at 70% 50%, rgba(168,85,247,0.3) 0%, transparent 60%)',
-            }} />
-          </div>
-          <div className="px-4 sm:px-6 pb-4 sm:pb-6">
-            <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-5 -mt-8 sm:-mt-10 mb-3 sm:mb-5">
+        <div className="glass-card relative overflow-hidden p-4 sm:p-5">
+          <div className="absolute inset-0 opacity-40 pointer-events-none" style={{
+            backgroundImage: 'radial-gradient(circle at 0% 0%, rgba(79,110,247,0.18) 0%, transparent 50%), radial-gradient(circle at 100% 0%, rgba(168,85,247,0.15) 0%, transparent 50%)',
+          }} />
+          <div className="relative">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 mb-3">
               <img
                 src={getUserAvatarUrl(username)}
                 alt={username}
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-4 border-ra-darker object-cover flex-shrink-0"
+                className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border border-ra-border object-cover flex-shrink-0"
                 onError={e => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${username}&background=4F6EF7&color=fff&size=80`; }}
               />
               <div className="flex-1 min-w-0">
-                <div className="text-lg sm:text-xl font-bold text-white">{username}</div>
-                {summary.Motto && <span className="text-ra-text text-sm italic">"{summary.Motto}"</span>}
+                <div className="text-lg sm:text-xl font-bold text-white truncate">{username}</div>
+                {summary.Motto && <div className="text-ra-text text-sm italic truncate">"{summary.Motto}"</div>}
               </div>
-              <div className="flex items-center gap-3 sm:mb-2">
+              <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
                 <div className="text-center">
                   <div className="text-white font-bold">{primaryPoints.toLocaleString()}</div>
                   <div className="text-ra-text text-xs">{isHardcoreUser ? 'HC Points' : 'SC Points'}</div>
                 </div>
-                {isHardcoreUser ? (
+                {isHardcoreUser && (
                   <>
                     <div className="w-px h-8 bg-ra-border" />
                     <div className="text-center">
@@ -267,7 +263,7 @@ export function DashboardPage() {
                       <div className="text-ra-text text-xs">True Pts</div>
                     </div>
                   </>
-                ) : null}
+                )}
                 {hasRank && (
                   <>
                     <div className="w-px h-8 bg-ra-border" />
