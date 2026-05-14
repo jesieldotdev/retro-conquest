@@ -1,6 +1,6 @@
 import {
   Trophy, Star, Flame, TrendingUp, Gamepad2,
-  Clock, Award, Zap, Medal, ChevronRight, Lock, AlertCircle,
+  Clock, Award, Zap, Medal, ChevronRight, Lock, AlertCircle, Radio,
 } from 'lucide-react';
 import { useUserSummary, useRecentAchievements, useUserRank, useAchievementOfWeek, useRecentlyPlayed } from '../hooks/useRA';
 import { useAuth } from '../context/AuthContext';
@@ -10,6 +10,7 @@ import { Badge } from '../components/ui/Badge';
 import { Skeleton } from '../components/ui/Skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
+import { clsx } from 'clsx';
 
 function ErrorBox({ message }: { message: string }) {
   return (
@@ -119,6 +120,17 @@ export function DashboardPage() {
   const { data: aotw } = useAchievementOfWeek();
 
   const richPresence = summary?.RichPresenceMsg;
+  const currentGame = recentGames?.[0] ?? summary?.RecentlyPlayed?.[0];
+  const lastPlayedMs = currentGame?.LastPlayed ? Date.now() - new Date(currentGame.LastPlayed).getTime() : Infinity;
+  const isPlayingNow = !!currentGame && lastPlayedMs < 1000 * 60 * 15;
+
+  const hcPoints = summary?.TotalPoints ?? 0;
+  const scPoints = summary?.TotalSoftcorePoints ?? 0;
+  const isHardcoreUser = hcPoints > 0;
+  const primaryPoints = isHardcoreUser ? hcPoints : scPoints;
+  const primaryPointsLabel = isHardcoreUser ? 'HC Points' : 'SC Points';
+  const rankNum = rank?.Rank != null ? Number(rank.Rank) : 0;
+  const hasRank = rankNum > 0;
 
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-7xl mx-auto">
@@ -133,10 +145,10 @@ export function DashboardPage() {
             <span className="truncate">{richPresence || 'Ready to conquer achievements'}</span>
           </p>
         </div>
-        {rank?.Rank && (
+        {hasRank && (
           <div className="glass-card px-3 py-2 flex items-center gap-2 self-start">
             <Medal className="w-4 h-4 text-ra-gold" />
-            <span className="text-white font-bold">#{parseInt(rank.Rank).toLocaleString()}</span>
+            <span className="text-white font-bold">#{rankNum.toLocaleString()}</span>
             <span className="text-ra-text text-xs">global</span>
           </div>
         )}
@@ -150,16 +162,72 @@ export function DashboardPage() {
         <ErrorBox message="Failed to load recent achievements" />
       )}
 
+      {/* Now playing */}
+      {currentGame && (
+        <Link
+          to={`/games/${currentGame.GameID}`}
+          className={clsx(
+            'glass-card-hover p-4 flex items-center gap-4 group',
+            isPlayingNow && 'border-ra-green/40 shadow-[0_0_24px_-12px_rgba(34,197,94,0.5)]',
+          )}
+        >
+          <img
+            src={getImageUrl(currentGame.ImageIcon)}
+            alt={currentGame.Title}
+            className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover border border-ra-border flex-shrink-0"
+            onError={e => { (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${currentGame.Title[0]}&background=141628&color=4F6EF7`; }}
+          />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-0.5">
+              {isPlayingNow ? (
+                <>
+                  <span className="relative flex w-2 h-2 flex-shrink-0">
+                    <span className="absolute inline-flex w-full h-full bg-ra-green rounded-full opacity-75 animate-ping" />
+                    <span className="relative inline-flex w-2 h-2 bg-ra-green rounded-full" />
+                  </span>
+                  <span className="text-ra-green text-xs font-semibold uppercase tracking-wide">Playing now</span>
+                </>
+              ) : (
+                <>
+                  <Clock className="w-3 h-3 text-ra-text/60" />
+                  <span className="text-ra-text text-xs uppercase tracking-wide">Last played</span>
+                </>
+              )}
+              <span className="text-ra-text/50 text-xs">•</span>
+              <span className="text-ra-text text-xs truncate">{currentGame.ConsoleName}</span>
+            </div>
+            <div className="text-white font-bold text-base sm:text-lg truncate">{currentGame.Title}</div>
+            <div className="text-ra-text text-xs mt-0.5 flex items-center gap-1.5 truncate">
+              {isPlayingNow && <Radio className="w-3 h-3 text-ra-green flex-shrink-0" />}
+              <span className="truncate">{richPresence || (currentGame.LastPlayed && formatDistanceToNow(new Date(currentGame.LastPlayed), { addSuffix: true }))}</span>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-ra-text/40 flex-shrink-0 group-hover:text-ra-accent transition-colors" />
+        </Link>
+      )}
+
       {/* Stat cards */}
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
         {sumLoading ? (
           [...Array(4)].map((_, i) => <Skeleton key={i} className="h-20 rounded-2xl" />)
         ) : (
           <>
-            <StatCard icon={Flame} label="HC Points" value={summary?.TotalPoints ?? 0} sub={`${(summary?.TotalTruePoints ?? 0).toLocaleString()} true`} color="text-ra-gold" />
+            <StatCard
+              icon={Flame}
+              label={primaryPointsLabel}
+              value={primaryPoints}
+              sub={isHardcoreUser ? `${(summary?.TotalTruePoints ?? 0).toLocaleString()} true` : 'softcore'}
+              color="text-ra-gold"
+            />
             <StatCard icon={Trophy} label="Achievements" value={recentAchs?.length ? `${recentAchs.length}+` : 0} sub="recent unlocks" color="text-ra-purple" />
             <StatCard icon={Gamepad2} label="Games" value={summary?.RecentlyPlayed?.length ?? 0} sub="recently active" color="text-ra-accent" />
-            <StatCard icon={TrendingUp} label="Rank" value={rank?.Rank ? `#${parseInt(rank.Rank).toLocaleString()}` : '—'} sub={`of ${summary?.TotalRanked?.toLocaleString() ?? '?'}`} color="text-ra-green" />
+            <StatCard
+              icon={TrendingUp}
+              label="Rank"
+              value={hasRank ? `#${rankNum.toLocaleString()}` : '—'}
+              sub={hasRank ? `of ${summary?.TotalRanked?.toLocaleString() ?? '?'}` : 'softcore unranked'}
+              color="text-ra-green"
+            />
           </>
         )}
       </div>
@@ -188,19 +256,23 @@ export function DashboardPage() {
               </div>
               <div className="flex items-center gap-3 sm:mb-2">
                 <div className="text-center">
-                  <div className="text-white font-bold">{summary.TotalPoints.toLocaleString()}</div>
-                  <div className="text-ra-text text-xs">Points</div>
+                  <div className="text-white font-bold">{primaryPoints.toLocaleString()}</div>
+                  <div className="text-ra-text text-xs">{isHardcoreUser ? 'HC Points' : 'SC Points'}</div>
                 </div>
-                <div className="w-px h-8 bg-ra-border" />
-                <div className="text-center">
-                  <div className="text-white font-bold">{summary.TotalTruePoints.toLocaleString()}</div>
-                  <div className="text-ra-text text-xs">True Pts</div>
-                </div>
-                {rank?.Rank && (
+                {isHardcoreUser ? (
                   <>
                     <div className="w-px h-8 bg-ra-border" />
                     <div className="text-center">
-                      <div className="text-white font-bold">#{parseInt(rank.Rank).toLocaleString()}</div>
+                      <div className="text-white font-bold">{summary.TotalTruePoints.toLocaleString()}</div>
+                      <div className="text-ra-text text-xs">True Pts</div>
+                    </div>
+                  </>
+                ) : null}
+                {hasRank && (
+                  <>
+                    <div className="w-px h-8 bg-ra-border" />
+                    <div className="text-center">
+                      <div className="text-white font-bold">#{rankNum.toLocaleString()}</div>
                       <div className="text-ra-text text-xs">Rank</div>
                     </div>
                   </>

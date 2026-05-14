@@ -229,7 +229,7 @@ export function GameDetailPage() {
           <div className="glass-card p-6 text-center text-ra-text text-sm">No players ranked yet.</div>
         ) : (
           <div className="glass-card divide-y divide-ra-border/50 overflow-hidden">
-            {gameRank.slice(0, 10).map((p, idx) => {
+            {gameRank.slice(0, 3).map((p, idx) => {
               const rank = idx + 1;
               const rankIcon = rank === 1 ? Crown : rank <= 3 ? Medal : null;
               const rankColor = rank === 1 ? 'text-yellow-400' : rank === 2 ? 'text-slate-300' : rank === 3 ? 'text-amber-600' : 'text-ra-text';

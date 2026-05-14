@@ -89,15 +89,22 @@ export function LeaderboardPage() {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-white text-2xl sm:text-3xl font-bold">#{parseInt(userRank.Rank).toLocaleString()}</div>
+              {(() => {
+                const rankNum = userRank.Rank != null ? Number(userRank.Rank) : 0;
+                return rankNum > 0 ? (
+                  <div className="text-white text-2xl sm:text-3xl font-bold">#{rankNum.toLocaleString()}</div>
+                ) : (
+                  <div className="text-ra-text text-xs sm:text-sm">softcore unranked</div>
+                );
+              })()}
               <div className="flex items-center gap-2 sm:gap-3 mt-1">
                 <div className="text-center">
-                  <div className="text-ra-gold font-semibold text-sm">{userRank.Score.toLocaleString()}</div>
+                  <div className="text-ra-gold font-semibold text-sm">{(userRank.Score ?? 0).toLocaleString()}</div>
                   <div className="text-ra-text text-xs">HC pts</div>
                 </div>
                 <div className="w-px h-6 sm:h-8 bg-ra-border" />
                 <div className="text-center">
-                  <div className="text-ra-text font-semibold text-sm">{userRank.SoftcoreScore.toLocaleString()}</div>
+                  <div className="text-ra-text font-semibold text-sm">{(userRank.SoftcoreScore ?? 0).toLocaleString()}</div>
                   <div className="text-ra-text text-xs">SC pts</div>
                 </div>
               </div>
@@ -255,7 +262,7 @@ export function LeaderboardPage() {
                 <div className="p-8 text-center text-ra-text text-sm">No players ranked yet.</div>
               ) : (
                 <div className="divide-y divide-ra-border/50">
-                  {gameRank.slice(0, 20).map((p, idx) => {
+                  {gameRank.slice(0, 3).map((p, idx) => {
                     const rank = idx + 1;
                     const rc = rankConfig[rank];
                     const isMe = p.User?.toLowerCase() === username.toLowerCase();
